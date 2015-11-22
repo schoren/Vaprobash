@@ -46,8 +46,7 @@ function create_server_block {
 read -d '' PHP_NO_SSL <<EOF
         # pass the PHP scripts to php5-fpm
         # Note: \.php$ is susceptible to file upload attacks
-        # Consider using: "location ~ ^/(index|app|app_dev|config)\.php(/|$) {"
-        location ~ \.php$ {
+        location ~ ^/(app|app_dev|config)\.(hh|php)(/|$) {
             try_files \$uri =404;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
             # With php5-fpm:
@@ -63,9 +62,7 @@ EOF
 # Nginx Server Block config for PHP (with SSL)
 read -d '' PHP_WITH_SSL <<EOF
         # pass the PHP scripts to php5-fpm
-        # Note: \.php$ is susceptible to file upload attacks
-        # Consider using: "location ~ ^/(index|app|app_dev|config)\.php(/|$) {"
-        location ~ \.php$ {
+        location ~ ^/(app|app_dev|config)\.(hh|php)(/|$) {
             try_files \$uri =404;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
             # With php5-fpm:
@@ -84,7 +81,7 @@ EOF
 # Nginx Server Block config for HHVM (without using SSL)
 read -d '' PHP_NO_SSL <<EOF
         # pass the PHP scripts to php5-fpm
-        location ~ \.(hh|php)$ {
+        location ~ ^/(app|app_dev|config)\.(hh|php)(/|$) {
             try_files \$uri =404;
             fastcgi_keep_conn on;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -101,7 +98,7 @@ EOF
 # Nginx Server Block config for HHVM (with SSL)
 read -d '' PHP_WITH_SSL <<EOF
         # pass the PHP scripts to php5-fpm
-        location ~ \.(hh|php)$ {
+        location ~ ^/(app|app_dev|config)\.(hh|php)(/|$) {
             try_files \$uri =404;
             fastcgi_keep_conn on;
             fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -131,14 +128,6 @@ cat <<EOF
         error_log  /var/log/nginx/vagrant.com-error.log error;
 
         charset utf-8;
-        
-        location ~ ^/(app_dev|config)\.php(/|$) {
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_split_path_info ^(.+\.php)(/.*)$;
-            include fastcgi_params;
-            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
-            fastcgi_param DOCUMENT_ROOT $realpath_root;
-        }
         
         location / {
             try_files \$uri \$uri/ /app.php?\$query_string /index.php?\$query_string;
@@ -175,14 +164,6 @@ cat <<EOF
 
         charset utf-8;
         
-        location ~ ^/(app_dev|config)\.php(/|$) {
-            fastcgi_pass unix:/var/run/php5-fpm.sock;
-            fastcgi_split_path_info ^(.+\.php)(/.*)$;
-            include fastcgi_params;
-            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
-            fastcgi_param DOCUMENT_ROOT $realpath_root;
-        }
-
         location / {
             try_files \$uri \$uri/ /app.php?\$query_string /index.php?\$query_string;
         }
