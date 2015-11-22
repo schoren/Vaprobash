@@ -131,7 +131,15 @@ cat <<EOF
         error_log  /var/log/nginx/vagrant.com-error.log error;
 
         charset utf-8;
-
+        
+        location ~ ^/(app_dev|config)\.php(/|$) {
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            include fastcgi_params;
+            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
+            fastcgi_param DOCUMENT_ROOT $realpath_root;
+        }
+        
         location / {
             try_files \$uri \$uri/ /app.php?\$query_string /index.php?\$query_string;
         }
@@ -166,6 +174,14 @@ cat <<EOF
         error_log  /var/log/nginx/vagrant.com-error.log error;
 
         charset utf-8;
+        
+        location ~ ^/(app_dev|config)\.php(/|$) {
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_split_path_info ^(.+\.php)(/.*)$;
+            include fastcgi_params;
+            fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
+            fastcgi_param DOCUMENT_ROOT $realpath_root;
+        }
 
         location / {
             try_files \$uri \$uri/ /app.php?\$query_string /index.php?\$query_string;
